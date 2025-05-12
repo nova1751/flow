@@ -7,7 +7,25 @@ const { withSentryConfig } = require('@sentry/nextjs')
 const withPWA = require('next-pwa')({
   dest: 'public',
   skipWaiting: true,
-  navigationPreload: true,
+  runtimeCaching: [
+    // 针对 HTML（导航请求）的缓存规则
+    {
+      // 匹配所有导航请求，只有当请求的 mode 为 "navigate" 时才适用
+      urlPattern: ({ request }) => request.mode === 'navigate',
+      // 采用 CacheFirst 策略：先从缓存中查找，只有在没有缓存时才去网络请求
+      handler: 'CacheFirst',
+      options: {
+        // 定义一个专门用于 HTML 的缓存名称
+        cacheName: 'html-cache',
+        expiration: {
+          // 限制缓存中的 HTML 个数
+          maxEntries: 50,
+          // 设置缓存的有效期（这里设置为 1 天）
+          maxAgeSeconds: 24 * 60 * 60,
+        },
+      },
+    },
+  ],
 })
 const withTM = require('next-transpile-modules')([
   '@flow/internal',
