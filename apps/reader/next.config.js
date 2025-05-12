@@ -7,7 +7,7 @@ const { withSentryConfig } = require('@sentry/nextjs')
 const withPWA = require('next-pwa')({
   dest: 'public',
   skipWaiting: true,
-  cacheOnFrontEndNav: true,
+  navigationPreload: true,
 })
 const withTM = require('next-transpile-modules')([
   '@flow/internal',
